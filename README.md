@@ -1,1 +1,3 @@
 # compiladores
+
+- compilador: g++
