@@ -43,4 +43,11 @@ class Token
             this->name = name;
             attribute = attr;
         }
+
+        Token(int name, string l)
+        {
+            this->name = name;
+            attribute = UNDEF;
+            lexeme = l;
+        }        
 };

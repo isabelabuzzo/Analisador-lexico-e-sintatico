@@ -7,6 +7,7 @@ Scanner::Scanner(string input)
     cout << "Entrada: " << input << endl << "Tamanho: " 
          << input.length() << endl;
     pos = 0;
+
 }
 
 //Método que retorna o próximo token da entrada
