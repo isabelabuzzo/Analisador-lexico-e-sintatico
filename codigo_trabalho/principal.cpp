@@ -24,8 +24,12 @@ int main(int argc, char* argv[])
     do
     {
         t = scanner->nextToken();
-        
-        cout << t->name << " ";
+        // caso tenha atributo, printar o atributo
+        if (t->attribute != UNDEF) {
+            cout << t->attribute << " ";
+        } else {
+            cout << t->name << " ";
+    }
     }while (t->name != END_OF_FILE);
 
     delete scanner;

@@ -27,7 +27,7 @@ Scanner::Scanner(string input)
 //    //A próxima linha deve ser comentada posteriormente.
 //    //Ela é utilizada apenas para verificar se o 
 //    //preenchimento de input foi feito corretamente.
-    cout << this->input;
+    //cout << this->input;
 
 }
 
@@ -124,6 +124,7 @@ Scanner::nextToken()
                 state = 34; // palavra reservada
             } else if (lexeme == "System") {
                 state = 35; // caso especial de system.out.print
+                pos--;      // voltando a posição para o dot
             } else {
                 state = 34; // id normal
             }
