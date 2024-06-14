@@ -53,3 +53,14 @@ void e while;
 (iniciado com // e indo até o final da linha) e comentário de bloco (iniciado com /∗ e encerrado
 em ∗/ sem aninhamentos);
 7. Espaços em branco: devem ser ignorados. São eles \n, \t, \r e \f.
+
+# Remoção de recursão à esquerda da gramática
+
+| **Nome da produção**              | **Produção original**                                                                 | **Produção sem recursão à esquerda**                                                |
+|-----------------------|------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| **Expression**        | **Expression** → Expression && RelExpression <br> \| RelExpression                                            | **Expression** → RelExpression Expression' <br> **Expression'** → && RelExpression Expression' <br> \| **ε** |
+| **RelExpression**     | **RelExpression** → RelExpression < AddExpression <br> \| RelExpression > AddExpression <br> \| RelExpression == AddExpression <br> \| RelExpression != AddExpression <br> \| AddExpression | **RelExpression** → AddExpression RelExpression' <br> **RelExpression'** → < AddExpression RelExpression' <br> \| > AddExpression RelExpression' <br> \| == AddExpression RelExpression' <br> \| != AddExpression RelExpression' <br> \| ε |
+| **AddExpression**     | **AddExpression** → AddExpression + MultExpression <br> \| AddExpression - MultExpression <br> \| MultExpression | **AddExpression** → MultExpression AddExpression' <br> **AddExpression'** → + MultExpression AddExpression' <br> \| - MultExpression AddExpression' <br> \| ε |
+| **MultExpression**    | **MultExpression** → MultExpression * UnExpression <br> \| MultExpression / UnExpression <br> \| UnExpression  | **MultExpression** → UnExpression MultExpression' <br> **MultExpression'** → * UnExpression MultExpression' <br> \| / UnExpression MultExpression' <br> \| ε |
+| **PrimExpression**    | **PrimExpression** → ID <br> \| this <br> \| new ID ( ) <br> \| ( Expression ) <br> \| PrimExpression . ID <br> \| PrimExpression . ID ( (ExpressionsList)? ) <br> \| PrimExpression . length <br> \| PrimExpression [ Expression ] | **PrimExpression** → ID PrimExpression' <br> \| this PrimExpression' <br> \| new ID ( ) PrimExpression' <br> \| ( Expression ) PrimExpression' <br> **PrimExpression'** → . ID PrimExpression' <br> \| . ID ( (ExpressionsList)? ) PrimExpression' <br> \| ε |
+
