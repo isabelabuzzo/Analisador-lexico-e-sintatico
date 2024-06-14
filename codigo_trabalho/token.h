@@ -59,7 +59,7 @@ class Token
         }
 
         // nome e lexema
-        Token(int name, string l) // exemplo: relop.
+        Token(int name, string l)
         {
             this->name = name;
             attribute = UNDEF;
@@ -72,4 +72,42 @@ class Token
             this->name = name;
             attribute = attr;
         }
+
+    static string returnTokenName(int name) {
+            static string names[] = {
+                "UNDEF",
+                "ID",
+                "INT",
+
+                "RELOP",
+                "EQ",
+                "NEQ",
+                "GT",
+                "LT",
+                "LOP",
+                "AND",
+                "NOT",
+
+                "ARTOP",
+                "PLUS",
+                "MINUS",
+                "MULT",
+                "DIVIDE",
+
+                "SEP",
+                "LB",
+                "RB",
+                "LCB",
+                "RCB",
+                "LSB",
+                "RSB",
+                "SC",
+                "DOT",
+                "COMMA", 
+                
+                "ASSIGN",
+                "END_OF_FILE"
+            };
+            return names[name];
+        }    
 };

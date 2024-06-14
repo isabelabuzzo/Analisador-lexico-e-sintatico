@@ -293,11 +293,11 @@ Scanner::nextToken()
             return tok;
 
         case 23: // [
-            tok = new Token(SEP, LSB);
+            tok = new Token(SEP, RSB);
             return tok;
         
         case 24: // ]
-            tok = new Token(SEP, RSB);
+            tok = new Token(SEP, LSB);
             return tok;
         
         case 25: // .

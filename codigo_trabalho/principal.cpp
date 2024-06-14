@@ -26,9 +26,9 @@ int main(int argc, char* argv[])
         t = scanner->nextToken();
         // caso tenha atributo, printar o atributo
         if (t->attribute != UNDEF) {
-            cout << t->attribute << " ";
+            cout << Token::returnTokenName(t->attribute) << " ";
         } else {
-            cout << t->name << " ";
+            cout << Token::returnTokenName(t->name) << " ";
     }
     }while (t->name != END_OF_FILE);
 
