@@ -123,8 +123,8 @@ Scanner::nextToken()
                 lexeme == "true" || lexeme == "void" || lexeme == "while") {
                 state = 34; // palavra reservada
             } else if (lexeme == "System") {
-                state = 35; // caso especial de system.out.print
                 pos--;      // voltando a posição para o dot
+                state = 35; // caso especial de system.out.print
             } else {
                 state = 34; // id normal
             }
@@ -138,11 +138,10 @@ Scanner::nextToken()
 
         case 35:
             if (input.substr(pos, 12) == ".out.println") {
-                lexeme += input.substr(pos, 12);
+                lexeme += input.substr(pos, 12); // avança ate o final da palavra
                 pos += 12;
-                state = 34;
+                state = 34; // reconhece token
             } else {
-                pos--;
                 state = 34;
             }
             pos++;
