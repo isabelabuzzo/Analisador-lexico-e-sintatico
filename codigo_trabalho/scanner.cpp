@@ -4,11 +4,10 @@
 //de entrada e preenche input com seu conteúdo.
 Scanner::Scanner(string input)
 {
-//    this->input = input;
-//    cout << "Entrada: " << input << endl << "Tamanho: " 
-//         << input.length() << endl;
-//    pos = 0;
-//    line = 1;
+    this->input = input;
+    cout << "Entrada: " << input << endl;
+    pos = 0;
+    line = 1;
 
     ifstream inputFile(input, ios::in); // verifica se arquivo esta aberto
     string line;
@@ -121,7 +120,7 @@ Scanner::nextToken()
                 lexeme == "new" || lexeme == "public" || lexeme == "return" ||
                 lexeme == "static" || lexeme == "String" || lexeme == "this" ||
                 lexeme == "true" || lexeme == "void" || lexeme == "while") {
-                state = 34; // palavra reservada
+                state = 36; // palavra reservada
             } else if (lexeme == "System") {
                 pos--;      // voltando a posição para o dot
                 state = 35; // caso especial de system.out.print
@@ -131,7 +130,7 @@ Scanner::nextToken()
             pos++;
             break;
 
-        case 34:
+        case 34: // ID normal
             tok = new Token(ID);
             pos--;
             return tok;
@@ -140,12 +139,18 @@ Scanner::nextToken()
             if (input.substr(pos, 12) == ".out.println") {
                 lexeme += input.substr(pos, 12); // avança ate o final da palavra
                 pos += 12;
-                state = 34; // reconhece token
+                state = 36; // reconhece token
             } else {
                 state = 34;
             }
             pos++;
             break;
+
+        case 36: // palavra reservada
+            tok = new Token(RESERVED, lexeme);
+            pos--;
+            return tok;
+
         
         case 3: // digito
             if (!isdigit(input[pos]))
@@ -239,7 +244,6 @@ Scanner::nextToken()
 
             } else { // =
                 state = 15;
-                pos++;
             }
             
             pos++;

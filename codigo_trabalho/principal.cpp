@@ -1,4 +1,5 @@
-#include "scanner.h"
+// #include "scanner.h"
+#include "parser.h"
 
 
 int main(int argc, char* argv[]) 
@@ -12,7 +13,9 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    string input;
+
+    /* -------------- ANÁLISE LÉXICA --------------
+    //string input;
     
     //getline(cin, input);
 
@@ -33,6 +36,11 @@ int main(int argc, char* argv[])
     }while (t->name != END_OF_FILE);
 
     delete scanner;
-    
+    ------------------------------------------ */
+
+    Parser *parser = new Parser(argv[1]);
+
+    parser->run();
+
     return 0;
 }

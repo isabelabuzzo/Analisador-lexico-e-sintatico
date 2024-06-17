@@ -39,7 +39,8 @@ enum Names
     COMMA,//25 , sep
 
     ASSIGN,//26 =
-    END_OF_FILE//27
+    RESERVED, //27 
+    END_OF_FILE//28
 };
 
 class Token 
@@ -52,10 +53,11 @@ class Token
         // construtores para cada tipo de token
 
         // apenas nome
-        Token(int name) // exemplo: if, else, id.
+        Token(int name) // exemplo: if, else.
         {
             this->name = name;
             attribute = UNDEF;
+            lexeme = UNDEF;
         }
 
         // nome e lexema
@@ -71,6 +73,7 @@ class Token
         {
             this->name = name;
             attribute = attr;
+            lexeme = UNDEF;
         }
 
     static string returnTokenName(int name) {
@@ -106,6 +109,7 @@ class Token
                 "COMMA", 
                 
                 "ASSIGN",
+                "RESERVED",
                 "END_OF_FILE"
             };
             return names[name];
