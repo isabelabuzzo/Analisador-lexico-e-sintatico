@@ -4,8 +4,8 @@
 //de entrada e preenche input com seu conteúdo.
 Scanner::Scanner(string input)
 {
-    this->input = input;
-    cout << "Entrada: " << input << endl;
+    //this->input = input;
+    //cout << "Entrada: " << input << endl;
     pos = 0;
     line = 1;
 
@@ -26,7 +26,7 @@ Scanner::Scanner(string input)
 //    //A próxima linha deve ser comentada posteriormente.
 //    //Ela é utilizada apenas para verificar se o 
 //    //preenchimento de input foi feito corretamente.
-    //cout << this->input;
+    cout << this->input << endl;
 
 }
 
@@ -131,7 +131,7 @@ Scanner::nextToken()
             break;
 
         case 34: // ID normal
-            tok = new Token(ID);
+            tok = new Token(ID, "");
             pos--;
             return tok;
 
@@ -160,7 +160,7 @@ Scanner::nextToken()
             break;
 
         case 4: // digito
-            tok = new Token(INT);
+            tok = new Token(INT, "");
             pos--;
             return tok;
 

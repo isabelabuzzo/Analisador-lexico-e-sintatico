@@ -2,7 +2,7 @@
 
 class Parser
 {
-    private:
+    public:
         Scanner* scanner; // retorna tokens
         Token* lToken;    // aponta token retornado pelo scanner
 

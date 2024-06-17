@@ -2,17 +2,13 @@
 
 Parser::Parser(string input)
 {
-	cout << "Initializing parser" << endl;
 	scanner = new Scanner(input);
-	cout << "Parser initialized" << endl;
-    advance();
-	cout << "Advancing..." << endl;
+	advance();
 }
 
 void
 Parser::run()
 {
-	cout << "Running parser" << endl;
     Program();
 }
 
@@ -20,27 +16,26 @@ void
 Parser::advance()
 {
 	lToken = scanner->nextToken();
-
-    cout << lToken->name << endl;
 }
 
 /**/
 void
 Parser::match(int t)
 {
-	if (lToken->name == t || lToken->attribute == t)
+	cout << "(int match) Current token: " << Token::returnTokenName(lToken->name) << endl;
+	if (lToken->name == t || lToken->attribute == t || lToken->name == 1)
 		advance();
 	else
+		cout << "(int match) Current token: " << Token::returnTokenName(lToken->name) << endl;
 		error("Erro no match int");
 }
 
 void
 Parser::match(int t, string lexeme)
 {
-    cout << "Matching token: " << Token::returnTokenName(t) << " with lexeme: " << lexeme << endl;
-    cout << "Current token: " << Token::returnTokenName(lToken->name) << " with lexeme: " << lToken->lexeme << endl;
-	
-	if (lToken->name == t && lToken->lexeme == lexeme)
+    //cout << "(lexeme match) Current token: " << Token::returnTokenName(lToken->name) << endl;
+	// " with lexeme: " << lToken->lexeme <<
+	if (lToken->name == t && (lToken->lexeme == lexeme || lToken->lexeme == ""))
         advance();
     else{
 		cout << "Token esperado: " << Token::returnTokenName(t) << " com lexema: " << lexeme << endl;
@@ -58,7 +53,7 @@ void
 // Program → MainClass ( ClassDeclaration )∗ EOF
 Parser::Program()
 {
-	cout << "Entering Program" << endl;
+	cout << "Entrou em Program" << endl;
 	MainClass();
 	while (lToken->name == RESERVED && lToken->lexeme == "class") // ( ClassDeclaration )∗
 	{
@@ -71,23 +66,26 @@ Parser::Program()
 void 
 Parser::MainClass()
 {
+	cout << "Entrou em MC" << endl;
 	match(RESERVED, "class");
-	match(ID);
-	match(RCB);
+	//cout << "Current token: " << Token::returnTokenName(lToken->name) << endl;
+	match(ID, "");
+	match(RCB, "");
 	match(RESERVED, "public");
 	match(RESERVED, "static");
 	match(RESERVED, "void");
 	match(RESERVED, "main");
-	match(RB);
+	match(RB, "");
 	match(RESERVED, "String");
-	match(RSB);
-	match(LSB);
-	match(ID);
-	match(LB);
-	match(RCB);
+	match(RSB, "");
+	match(LSB, "");
+	match(ID, "");
+	match(LB, "");
+	match(RCB, "");
 	Statement();
-	match(LCB);
-	match(LCB);
+	match(LCB, "");
+	match(LCB, "");
+	cout << "Saiu de MC" << endl;
 }
 
 // ClassDeclaration → class ID (extends ID)? { (VarDeclaration)∗ (MethodDeclaration)∗ }
@@ -95,15 +93,15 @@ void
 Parser::ClassDeclaration()
 {
 	match(RESERVED, "class");
-	match(ID);
+	match(ID, "");
 
 	if (lToken->name == RESERVED && lToken->lexeme == "extends") // (extends ID)?
 	{
 		advance();
-		match(ID);
+		match(ID, "");
 	}
 
-	match(RCB);
+	match(RCB, "");
 
 	while (isType()) // (VarDeclaration)∗
 		VarDeclaration();
@@ -111,7 +109,7 @@ Parser::ClassDeclaration()
 	while(lToken->name == RESERVED && lToken->lexeme == "public") // (MethodDeclaration)∗
 		MethodDeclaration();
 
-	match(LCB);
+	match(LCB, "");
 
 }
 
@@ -120,8 +118,8 @@ void
 Parser::VarDeclaration()
 {
 	Type();
-	match(ID);
-	match(SC);
+	match(ID, "");
+	match(SC, "");
 }
 
 // MethodDeclaration → public Type ID ( (Params)? ) { (VarDeclaration)∗ (Statement)∗ return Expression ; }
@@ -130,14 +128,14 @@ Parser::MethodDeclaration()
 {
 	match(RESERVED, "public");
 	Type();
-	match(ID);
-	match(RB);
+	match(ID, "");
+	match(RB, "");
 
 	if (isType()) // (Params)?
 		Params();
 	
-	match(LB);
-	match(RCB);
+	match(LB, "");
+	match(RCB, "");
 
 	while (isType()) // (VarDeclaration)∗
 		VarDeclaration();
@@ -148,8 +146,8 @@ Parser::MethodDeclaration()
 
 	match(RESERVED, "return");
 	Expression();
-	match(SC);
-	match(LCB);
+	match(SC, "");
+	match(LCB, "");
 }
 
 //  Params → Type ID (, Type ID)∗
@@ -157,13 +155,13 @@ void
 Parser::Params()
 {
 	Type();
-	match(ID);
+	match(ID, "");
 	
 	while (lToken->name == SEP && lToken->attribute == COMMA)
 	{
 		advance();
 		Type();
-		match(ID);
+		match(ID, "");
 	}
 }
 
@@ -177,7 +175,7 @@ Parser::Type()
 		while(lToken->name == SEP && lToken->attribute == RSB)
 		{
 			advance();
-			match(LSB);
+			match(LSB, "");
 		}
 	} else if (lToken->name == RESERVED && lToken->lexeme == "boolean"){
 		advance();
@@ -200,26 +198,26 @@ Parser::Statement()
 	// if ( Expression ) Statement else Statement
 	} else if (lToken->lexeme == "if"){
 		advance();
-		match(RB);
+		match(RB, "");
 		Expression();
-		match(LB);
+		match(LB, "");
 		Statement();
 		match(RESERVED, "else");
 		Statement();
 	// while ( Expression ) Statement
 	} else if (lToken->lexeme == "while"){
 		advance();
-		match(RB);
+		match(RB, "");
 		Expression();
-		match(LB);
+		match(LB, "");
 		Statement();
 	// System.out.println ( Expression ) ;
 	} else if (lToken->lexeme == "System.out.println") {
 		advance();
-		match(RB);
+		match(RB, "");
 		Expression();
-		match(LB);
-		match(SC);
+		match(LB, "");
+		match(SC, "");
 	// ID = Expression ;
 	// ID [ Expression ] = Expression ;
 	} else if (lToken->name == ID){
@@ -227,14 +225,14 @@ Parser::Statement()
 		if (lToken->name == ASSIGN){
 			advance();
 			Expression();
-			match(SC);
+			match(SC, "");
 		} else if (lToken->attribute == RSB) {
 			advance();
 			Expression();
-			match(LSB);
-			match(ASSIGN);
+			match(LSB, "");
+			match(ASSIGN, "");
 			Expression();
-			match(SC);
+			match(SC, "");
 		} else {
 			error("Atribuição de ID inválida.");
 		}
@@ -259,7 +257,7 @@ Parser::Expression()
 void 
 Parser::Expression_()
 {
-	match(AND);
+	match(AND, "");
 	RelExpression();
 	Expression_();
 }
@@ -375,15 +373,15 @@ Parser::UnExpression()
 {
 	if (lToken->attribute == NOT || lToken->attribute == MINUS){
 		advance();
-		match(INT);
+		match(INT, "");
 	} else if (lToken->lexeme == "true" || lToken->lexeme == "false"){
 		advance();
 	} else if (lToken->lexeme == "new"){
 		advance();
-		match(INT);
-		match(RSB);
+		match(INT, "");
+		match(RSB, "");
 		Expression();
-		match(LSB);
+		match(LSB, "");
 	} else {
 		PrimExpression();
 		if (lToken->attribute == DOT){
@@ -392,7 +390,7 @@ Parser::UnExpression()
 		} else if (lToken->attribute == RSB){
 			advance();
 			Expression();
-			match(LSB);
+			match(LSB, "");
 		}
 	}
 }
@@ -413,14 +411,14 @@ Parser::PrimExpression()
 			PrimExpression_();
 		}else if (lToken->lexeme == "new"){
 			advance();
-			match(ID);
-			match(RB);
-			match(LB);
+			match(ID, "");
+			match(RB, "");
+			match(LB, "");
 			PrimExpression_();
 		}else if (lToken->attribute == RB) {
 			advance();
 			Expression();
-			match(LB);
+			match(LB, "");
 			PrimExpression_();
 		} else {
 			error("Expressão prim inválida.");
@@ -434,14 +432,14 @@ Parser::PrimExpression_()
 {
 	if (lToken->attribute == DOT){
 		advance();
-		match(ID);
+		match(ID, "");
 		if (lToken->attribute == RB){
 			advance();
 
 			if (lToken->attribute != LB)
 				ExpressionsList();
 
-			match(LB);
+			match(LB, "");
 			PrimExpression_();
 		}
 	} else {
@@ -454,7 +452,7 @@ void
 Parser::ExpressionsList()
 {
 	Expression();
-	match(RB);
+	match(RB, "");
 
 	while(lToken->attribute == COMMA){
 		advance();
