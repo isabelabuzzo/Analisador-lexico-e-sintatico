@@ -51,7 +51,7 @@ Scanner::nextToken()
         case 0:
             if (input[pos] == '\0')
             {
-                tok = new Token(END_OF_FILE);
+                tok = new Token(END_OF_FILE, "");
                 return tok;
             }
             else if (input[pos] == '<')
@@ -165,23 +165,23 @@ Scanner::nextToken()
             return tok;
 
         case 5: // <
-            tok = new Token(RELOP, LT);
+            tok = new Token(LT, "");
             return tok;
 
         case 6: // >
-            tok = new Token(RELOP, GT);
+            tok = new Token(GT, "");
             return tok;
 
         case 7: // *
-            tok = new Token(ARTOP, MULT);
+            tok = new Token(MULT, "");
             return tok;
         
         case 8: // -
-            tok = new Token(ARTOP, MINUS);
+            tok = new Token(MINUS, "");
             return tok;
         
         case 9: // +
-            tok = new Token(ARTOP, PLUS);
+            tok = new Token(PLUS, "");
             return tok;
 
         case 10: // / ou comentário
@@ -203,7 +203,7 @@ Scanner::nextToken()
             break;
 
         case 31: // divide
-            tok = new Token(ARTOP, DIVIDE);
+            tok = new Token(DIVIDE, "");
             pos--;
             return tok;
 
@@ -234,7 +234,7 @@ Scanner::nextToken()
             break;
         
         case 12: // &&
-            tok = new Token(LOP, AND);
+            tok = new Token(AND, "");
             return tok;
         
         case 13: // == ou =
@@ -250,11 +250,11 @@ Scanner::nextToken()
             break;
 
         case 14: // ==
-            tok = new Token(RELOP, EQ);
+            tok = new Token(EQ, "");
             return tok;
         
         case 15: // =
-            tok = new Token(ASSIGN);
+            tok = new Token(ASSIGN, "");
             pos--;
             return tok;
 
@@ -271,48 +271,48 @@ Scanner::nextToken()
             break;
         
         case 17: // !=
-            tok = new Token(RELOP, NEQ);
+            tok = new Token(NEQ, "");
             return tok;
 
         case 18: // !
-            tok = new Token(LOP, NOT);
+            tok = new Token(NOT, "");
             pos--;
             return tok;
         
         case 19: // )
-            tok = new Token(SEP, LB);
+            tok = new Token(LB, "");
             return tok;
         
         case 20: // (
-            tok = new Token(SEP, RB);
+            tok = new Token(RB, "");
             return tok;
 
         case 21: // }
-            tok = new Token(SEP, LCB);
+            tok = new Token(LCB, "");
             return tok;
 
         case 22: // {
-            tok = new Token(SEP, RCB);
+            tok = new Token(RCB, "");
             return tok;
 
         case 23: // [
-            tok = new Token(SEP, RSB);
+            tok = new Token(RSB, "");
             return tok;
         
         case 24: // ]
-            tok = new Token(SEP, LSB);
+            tok = new Token(LSB, "");
             return tok;
         
         case 25: // .
-            tok = new Token(SEP, DOT);
+            tok = new Token(DOT, "");
             return tok;
         
         case 26: // ,
-            tok = new Token(SEP, COMMA);
+            tok = new Token(COMMA, "");
             return tok;
         
         case 27: // ;
-            tok = new Token(SEP, SC);
+            tok = new Token(SC, "");
             return tok;
 
         case 28: // pos++ enquanto for espaço
