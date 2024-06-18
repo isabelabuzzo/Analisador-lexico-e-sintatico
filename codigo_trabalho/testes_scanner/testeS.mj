@@ -1,0 +1,7 @@
+class ID {
+    public static void main (String[ ] ID){ 
+        ID = true ;
+        } }
+        class ID extends ID { 
+            boolean ID;
+        }

@@ -1,0 +1,4 @@
+boolean isTrue = false;
+if (isTrue) {
+    System.out.println("Condition is true.");
+}

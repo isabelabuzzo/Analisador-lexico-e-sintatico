@@ -1,0 +1,5 @@
+// This is a line comment
+/*
+This is a block comment
+*/
+int number = 10; // Another line comment

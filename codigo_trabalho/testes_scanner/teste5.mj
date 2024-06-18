@@ -1,0 +1,5 @@
+int x = 165;  // initialize x
+int y = 2;  /* initialize y */
+x == y + x;
+System;
+System.out.println
