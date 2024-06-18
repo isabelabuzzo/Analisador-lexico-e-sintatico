@@ -45,6 +45,7 @@ class Parser
         // Mais fácil p entender
         bool isType();
         bool isStatement();
+        bool isExpression();
         
     public:
         Parser(string);
