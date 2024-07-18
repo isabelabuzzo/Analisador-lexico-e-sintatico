@@ -95,9 +95,11 @@ Scanner::nextToken()
                 lexeme += input[pos]; // palavra reservada
             } else if (isdigit(input[pos]))
                 state = 3;
-            else if (isspace(input[pos]))
+            else if (isspace(input[pos])){
+                if (input[pos] == '\n')
+                    line++;
                 state = 28;
-            else
+            } else
                 lexicalError();
 
             pos++;
@@ -196,10 +198,10 @@ Scanner::nextToken()
             break;
         
         case 30: // passa para o proximo enquanto não houver quebra de linha
-            if (input[pos] == '\n')
-                state = 0;
-
-            pos++;
+            while (input[pos] != '\n' && input[pos] != '\0') {
+                pos++;
+            }
+            state = 0;
             break;
 
         case 31: // divide
@@ -210,6 +212,8 @@ Scanner::nextToken()
         case 32: // comentario */
             if (input[pos] == '*')
                 state = 33;
+            if (input[pos] == '\n')
+                line++;
 
             pos++;
             break;
@@ -318,6 +322,8 @@ Scanner::nextToken()
         case 28: // pos++ enquanto for espaço
             if (!isspace(input[pos]))
                 state = 29;
+            if (input[pos] == '\n')
+                line++;
 
             pos++;
             break;
@@ -336,7 +342,7 @@ Scanner::nextToken()
 void 
 Scanner::lexicalError()
 {
-    cout << "Token mal formado\n";
+    cout << "Token mal formado na linha " << line << "\n";
     
     exit(EXIT_FAILURE);
 }
