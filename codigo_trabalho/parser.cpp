@@ -9,7 +9,12 @@ Parser::Parser(string input)
 void
 Parser::run()
 {
-    Program();
+    try {
+        Program();
+        cout << "Compilacao finalizada com sucesso." << endl;
+    } catch (const runtime_error& e) {
+        cout << e.what() << endl;
+    }
 }
 
 void
@@ -18,7 +23,7 @@ Parser::advance()
 	lToken = scanner->nextToken();
 }
 
-/**/
+/*
 void
 Parser::match(int t)
 {
@@ -30,18 +35,16 @@ Parser::match(int t)
 		error("Erro no match int");
 		}
 }
+*/
 
 void
 Parser::match(int t, string lexeme)
 {
-    //cout << "(lexeme match) Current token: " << Token::returnTokenName(lToken->name) << endl;
-	// " with lexeme: " << lToken->lexeme <<
-	if (lToken->name == t && (lToken->lexeme == lexeme || lToken->lexeme == ""))
-        advance();
-    else{
-		cout << "Current token: " << Token::returnTokenName(lToken->name) << endl;
-		cout << "Token esperado: " << Token::returnTokenName(t) << " com lexema: " << lexeme << endl;
-		error("Erro inesperado." );
+	if (lToken->name == t && (lToken->lexeme == lexeme || lToken->lexeme == "")){
+    	advance();
+    } else {
+		string errorMsg = "LINHA " + to_string(scanner->getLine()) + ": Erro de sintaxe. Token atual: " + Token::returnTokenName(lToken->name) + " (" + lToken->lexeme + "), esperado: " + Token::returnTokenName(t) + " (" + lexeme + ")";
+		throw runtime_error(errorMsg);
 	}
         
 }
@@ -55,44 +58,35 @@ void
 // Program → MainClass ( ClassDeclaration )∗ EOF
 Parser::Program()
 {
-	cout << "Entrou em Program" << endl;
 	MainClass();
 	while (lToken->name == RESERVED && lToken->lexeme == "class") // ( ClassDeclaration )∗
 	{
-		cout << "Entrei no Class Declaration do Program" << endl;
 		ClassDeclaration();
 	}
-	cout << "Saí do Class Declaration" << endl;
 	match(END_OF_FILE, "");
-	cout << "Compilação concluída com sucesso." << endl;
 
 }
 // MainClass → class ID { public static void main (String[ ] ID){ Statement } }
 void 
 Parser::MainClass()
 {
-	cout << "Entrou em MC" << endl;
 	match(RESERVED, "class");
-	//cout << "Current token: " << Token::returnTokenName(lToken->name) << endl;
-	match(ID, "");
-	match(RCB, "");
+	match(ID, "Um ID eh esperado apos 'class'");
+	match(RCB, "Um '{' eh esperado apos 'class ID'");
 	match(RESERVED, "public");
 	match(RESERVED, "static");
 	match(RESERVED, "void");
 	match(RESERVED, "main");
-	match(RB, "");
+	match(RB, "Um '(' eh esperado apos 'main'");
 	match(RESERVED, "String");
-	match(RSB, "");
-	match(LSB, "");
-	match(ID, "");
-	match(LB, "");
-	match(RCB, "");
-	cout << "Chegou no Statement do MainClass" << endl;
+	match(RSB, "Um '[' eh esperado apos 'String'");
+	match(LSB, "Um ']' eh esperado apos 'String['");
+	match(ID, "Um ID eh esperado apos 'String[]'");
+	match(LB, "Um ')' eh esperado apos 'ID'");
+	match(RCB, "Um '{' eh esperado apos 'main(String[] ID)'");
 	Statement();
-	cout << "Saiu do Statement do MainClass" << endl;
-	match(LCB, "");
-	match(LCB, "");
-	cout << "Saiu de MC" << endl;
+	match(LCB, "Um '}' eh esperado no final da classe");
+	match(LCB, "Um '}' eh esperado no final do bloco");
 }
 
 // ClassDeclaration → class ID (extends ID)? { (VarDeclaration)∗ (MethodDeclaration)∗ }
@@ -100,15 +94,15 @@ void
 Parser::ClassDeclaration()
 {
 	match(RESERVED, "class");
-	match(ID, "");
+	match(ID, "Um ID eh esperado apos 'class'");
 
 	if (lToken->name == RESERVED && lToken->lexeme == "extends") // (extends ID)?
 	{
 		advance();
-		match(ID, "");
+		match(ID, "Um ID eh esperado apos 'extends'");
 	}
 
-	match(RCB, "");
+	match(RCB, "Um '{' eh esperado apos 'class ID' ou 'class ID extends ID'");
 
 	while (isType()) // (VarDeclaration)∗
 		VarDeclaration();
@@ -116,7 +110,7 @@ Parser::ClassDeclaration()
 	while(lToken->name == RESERVED && lToken->lexeme == "public") // (MethodDeclaration)∗
 		MethodDeclaration();
 
-	match(LCB, "");
+	match(LCB, "Um '}' eh esperado para fechar a classe");
 
 }
 
@@ -125,8 +119,8 @@ void
 Parser::VarDeclaration()
 {
 	Type();
-	match(ID, "");
-	match(SC, "");
+	match(ID, "Um ID eh esperado apos o tipo.");
+	match(SC, "Um ';' eh esperado apos 'ID' ao declarar variavel.");
 }
 
 // MethodDeclaration → public Type ID ( (Params)? ) { (VarDeclaration)∗ (Statement)∗ return Expression ; }
@@ -135,14 +129,14 @@ Parser::MethodDeclaration()
 {
 	advance();
 	Type();
-	match(ID, "");
-	match(RB, "");
+	match(ID, "Um ID eh esperado apos tipo na declaracao de metodo");
+	match(RB, "Um '(' eh esperado apos 'ID' na declaracao de metodo");
 
 	if (isType()) // (Params)?
 		Params();
 	
-	match(LB, "");
-	match(RCB, "");
+	match(LB, "Um ')' eh esperado apos parametros na declaracao de metodo");
+	match(RCB, "Um '{' eh esperado apos ( parametros ) ou após ID na declaracao de metodo.");
 
 	while (isType()) // (VarDeclaration)∗
 		VarDeclaration();
@@ -153,8 +147,8 @@ Parser::MethodDeclaration()
 
 	match(RESERVED, "return");
 	Expression();
-	match(SC, "");
-	match(LCB, "");
+	match(SC, "Um ';' eh esperado apos 'return Expression' na declaracao de metodo");
+	match(LCB, "Um '}' eh esperado para fechar a declaracao do metodo");
 }
 
 //  Params → Type ID (, Type ID)∗
@@ -162,13 +156,13 @@ void
 Parser::Params()
 {
 	Type();
-	match(ID, "");
+	match(ID, "Um ID eh esperado apos tipo nos parametros do metodo");
 	
 	while (lToken->name == COMMA)
 	{
 		advance();
 		Type();
-		match(ID, "");
+		match(ID, "Um ID eh esperado apos tipo nos parametros do metodo");
 	}
 }
 
@@ -182,14 +176,14 @@ Parser::Type()
 		while(lToken->name == RSB)
 		{
 			advance();
-			match(LSB, "");
+			match(LSB, "Um ']' eh esperado apos 'int['");
 		}
 	} else if (lToken->name == RESERVED && lToken->lexeme == "boolean"){
 		advance();
 	} else if (lToken->name == ID) {
 		advance();
 	} else {
-		error("Type error: tipo inválido.");
+		error("Tipo invalido. Esperado 'int', 'boolean' ou ID.");
 	}
 }
 
@@ -197,37 +191,36 @@ Parser::Type()
 void 
 Parser::Statement()
 {
-	cout << "Dentro de statement" << endl;
 	// { (Statement)∗ }
 	if (lToken->name == RCB){
 		advance();
 		while (isStatement()){
 			Statement();
 		}
-		match(LCB, "");
+		match(LCB, "Um '}' eh esperado para fechar o bloco de statements");
 	// if ( Expression ) Statement else Statement
 	} else if (lToken->lexeme == "if"){
 		advance();
-		match(RB, "");
+		match(RB, "Um '(' eh esperado apos 'if'");
 		Expression();
-		match(LB, "");
+		match(LB, "Um ')' eh esperado apos expressao em 'if'");
 		Statement();
 		match(RESERVED, "else");
 		Statement();
 	// while ( Expression ) Statement
 	} else if (lToken->lexeme == "while"){
 		advance();
-		match(RB, "");
+		match(RB, "Um '(' eh esperado apos 'while'");
 		Expression();
-		match(LB, "");
+		match(LB, "Um ')' eh esperado apos expressao em 'while'");
 		Statement();
 	// System.out.println ( Expression ) ;
 	} else if (lToken->lexeme == "System.out.println") {
 		advance();
-		match(RB, "");
+		match(RB, "Um '(' eh esperado apos 'System.out.println'");
 		Expression();
-		match(LB, "");
-		match(SC, "");
+		match(LB, "Um ')' eh esperado apos expressao em 'System.out.println'");
+		match(SC, "Um ';' eh esperado apos 'System.out.println(Expression)'");
 	// ID = Expression ;
 	// ID [ Expression ] = Expression ;
 	} else if (lToken->name == ID){
@@ -235,19 +228,19 @@ Parser::Statement()
 		if (lToken->name == ASSIGN){
 			advance();
 			Expression();
-			match(SC, "");
+			match(SC, "Um ';' eh esperado apos 'ID = Expression'");
 		} else if (lToken->name == RSB) {
 			advance();
 			Expression();
-			match(LSB, "");
-			match(ASSIGN, "");
+			match(LSB, "Um ']' eh esperado apos 'ID['");
+			match(ASSIGN, "Um '=' eh esperado apos 'ID[Expression]'");
 			Expression();
-			match(SC, "");
+			match(SC, "Um ';' eh esperado apos 'ID[Expression] = Expression'");
 		} else {
-			error("Statement error: atribuição de ID inválida.");
+			error("Atribuicao de ID invalida. Esperado '=' ou '['.");
 		}
 	} else {
-		error("Statement error: nenhum if casou.");
+		error("Statement invalido.");
 	}
 }
 
@@ -347,12 +340,20 @@ Parser::UnExpression()
 		UnExpression();
 	} else if (lToken->lexeme == "true" || lToken->lexeme == "false" || lToken->name == INT){
 		advance();
-	} else if (lToken->lexeme == "new"){
+
+	} else if (lToken->lexeme == "new"){ // caso seja new id, será tratado em Prim
 		advance();
-		match(RESERVED, "int"); // BUG AKI
-		match(RSB, "");
-		Expression();
-		match(LSB, "");
+		if (lToken->lexeme == "int"){
+			advance();
+			match(RSB, "Um '[' eh esperado apos 'new int'");
+			Expression();
+			match(LSB, "Um ']' eh esperado apos 'new int['");
+		} else if (lToken->name == ID){
+			advance();
+			match(RB, "Um '(' eh esperado apos 'new ID'");
+			match(LB, "Um ')' eh esperado apos 'new ID('");
+			PrimExpression_();
+		}
 	} else {
 		PrimExpression();
 		if (lToken->name == DOT){
@@ -362,7 +363,7 @@ Parser::UnExpression()
 		if (lToken->name == RSB){
 			advance();
 			Expression();
-			match(LSB, "");
+			match(LSB, "Um ']' eh esperado apos 'PrimExpression['");
 		}
 	}
 }
@@ -380,14 +381,14 @@ Parser::PrimExpression()
 		PrimExpression_();
 	} else if(lToken->lexeme == "new"){
 		advance();
-		match(ID, "");
-		match(RB, "");
-		match(LB, "");
+		match(ID, "Um ID eh esperado apos 'new'");
+		match(RB, "Um '(' eh esperado apos 'new ID'");
+		match(LB, "Um ')' eh esperado apos 'new ID('");
 		PrimExpression_();
 	} else if(lToken->name == RB){
 		advance();
 		Expression();
-		match(LB, "");
+		match(LB, "Um ')' eh esperado apos expressao em 'PrimExpression'");
 		PrimExpression_();
 	}
 }
@@ -398,14 +399,14 @@ Parser::PrimExpression_()
 {
 	if (lToken->name == DOT){
 		advance();
-		match(ID, "");
+		match(ID, "Um ID eh esperado apos '.'");
 
 		if(lToken->name == RB){
 			advance();
 			if(isExpression()){
 				ExpressionsList();
 			}
-			match(LB, "");
+			match(LB, "Um ')' eh esperado apos 'ID('");
 			PrimExpression_();
 		}
 	}
@@ -444,7 +445,6 @@ Parser::isExpression()
 void
 Parser::error(string str)
 {
-	cout << endl << "LINHA " << scanner->getLine() << ": " << str << endl << endl;
-
-	exit(EXIT_FAILURE);
+	string errorMsg = "LINHA " + to_string(scanner->getLine()) + ": " + str;
+    throw runtime_error(errorMsg);
 }
