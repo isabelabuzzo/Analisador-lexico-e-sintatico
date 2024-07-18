@@ -26,7 +26,7 @@ Scanner::Scanner(string input)
 //    //A próxima linha deve ser comentada posteriormente.
 //    //Ela é utilizada apenas para verificar se o 
 //    //preenchimento de input foi feito corretamente.
-    cout << this->input << endl;
+//    cout << this->input << endl;
 
 }
 

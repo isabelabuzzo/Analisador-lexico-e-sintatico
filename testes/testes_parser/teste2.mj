@@ -1,3 +1,4 @@
+// using Linear Search
 class ID { 
   public static void main (String[ ] ID){ 
       while ( 0 )
