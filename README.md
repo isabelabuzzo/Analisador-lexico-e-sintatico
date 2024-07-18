@@ -1,66 +1,66 @@
-# Compiladores I (2024.1)
+# :gear: Analisador léxico e sintático
 
-- O seguinte repositório tem como objetivo armazenar códigos referentes ao trabalho final da disciplina de Compiladores I do primeiro semestre de 2024 do curso de Ciência da Computação da UFMS.
+O seguinte repositório tem como objetivo armazenar códigos referentes à implementação de um analisador léxico e sintático para a linguagem de programação *MiniJava*, um subconjunto de Java. Ambas etapas fazem parte da construção de um compilador.
 
-- compilador: g++
+O analisador léxico é capaz de reconhecer e retornar os *tokens* da linguagem e o analisador sintático percorre o programa fonte, detectando e reportando erros. 
 
-- como compilar o programa:
+# :gear: Análise léxica
 
+A análise léxica é feita utilizando os seguintes *tokens*:
+
+1. **Identificadores (ID)**: uma sequência de letras, dígitos e underscores, começando sempre com uma letra. A linguagem distingue letras maiúsculas e minúsculas.
+
+2. **Números inteiros (INTEGER_LITERAL)**: uma sequência de dígitos decimais, que denotam o número inteiro correspondente.
+
+3. **Operadores (OP)**: &&, <, >, +, −, ∗, /, =, ==, ! = e !.
+
+4. **Separadores (SEP)**: (, ), [, ], {, }, ;, . e ,.
+
+5. **Palavras reservadas**: boolean, class, else, extends, false, if, int, length, main, new, public, return, static, String, System.out.println, this, true, void e while.
+
+6. **Comentários**: os comentários devem ser ignorados. Existem dois tipos: comentário de linha e comentário de bloco.
+
+7. **Espaços em branco**: devem ser ignorados. São eles \n, \t, \r e \f.
+
+## :desktop_computer: Execução
+A compilação pode ser realizada da seguinte forma:
 ```
-g++ token.h
-g++ scanner.h
-g++ -o scanner scanner.cpp principal.cpp
+g++ -o scanner scanner.cpp principal_lex.cpp
+
+./scanner teste.mj
 ```
 
-# Funcionalidades atuais
-- Implementação do scanner.
-  * Realiza a identificação dos tokens até ocorrer EOF.
-  * Desconsideração dos espaços.
-  * Reconhecimento de tokens inválidos (erro), porém sem tratamento.
+O analisador será responsável por percorrer o arquivo teste e retornar quais os *tokens* identificados. Caso não seja encontrada correspondência com os *tokens* da linguagem, será retornado um erro.
 
-# Tokens da linguagem
-
-1. Identificadores (ID): Uma sequência de letras, dígitos e underscores, começando sempre com
-uma letra. A linguagem distingue letras maiúsculas e minúsculas. As definições regulares referentes são:
-  * letra: [a-zA-Z];
-  * letras: letra+;
-  * dígito: [0-9];
-  * dígitos: dígito+ (uma ou mais ocorrências de um dígito);
-  * underscore: [_];
-  * underscores: underscore+;
-
-    Autômato correspondente: <br >
-  ![alt text](image-2.png)
+Os arquivos dentro da pasta *testes_scanner* podem ser utilizados.
 
 
-2. Números inteiros (INTEGER_LITERAL): uma sequência de dígitos decimais, que denotam o número inteiro correspondente. <br >
-    Autômato correspondente: <br >
-  ![alt text](image-3.png)
+# :gear: Análise sintática
+
+A análise sintática trabalha em conjunto com a análise léxica. Os *tokens* da linguagem serão analisados utilizando as produções gramaticais como base para gerar um analisador sintático descendente preditivo.
+
+A gramática original apresentava recursão à esquerda em suas produções, portanto, as recursões foram removidas, resultando nas produções finais, como demonstrado na tabela:
+| **Produção original**                                                                 | **Produção final**                                                |
+|------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| **Expression** → Expression && RelExpression <br> \| RelExpression                                            | **Expression** → RelExpression Expression' <br><br> **Expression'** → && RelExpression Expression' <br> \| **ε** |
+| **RelExpression** → RelExpression < AddExpression <br> \| RelExpression > AddExpression <br> \| RelExpression == AddExpression <br> \| RelExpression != AddExpression <br> \| AddExpression | **RelExpression** → AddExpression RelExpression' <br><br> **RelExpression'** → < AddExpression RelExpression' <br> \| > AddExpression RelExpression' <br> \| == AddExpression RelExpression' <br> \| != AddExpression RelExpression' <br> \| ε |
+| **AddExpression** → AddExpression + MultExpression <br> \| AddExpression - MultExpression <br> \| MultExpression | **AddExpression** → MultExpression AddExpression' <br><br> **AddExpression'** → + MultExpression AddExpression' <br> \| - MultExpression AddExpression' <br> \| ε |
+| **MultExpression** → MultExpression * UnExpression <br> \| MultExpression / UnExpression <br> \| UnExpression  | **MultExpression** → UnExpression MultExpression' <br><br> **MultExpression'** → * UnExpression MultExpression' <br> \| / UnExpression MultExpression' <br> \| ε |
+| **PrimExpression** → ID <br> \| this <br> \| new ID ( ) <br> \| ( Expression ) <br> \| PrimExpression . ID <br> \| PrimExpression . ID ( (ExpressionsList)? ) <br> \| PrimExpression . length <br> \| PrimExpression [ Expression ] | **PrimExpression** → ID PrimExpression' <br> \| this PrimExpression' <br> \| new ID ( ) PrimExpression' <br> \| ( Expression ) PrimExpression' <br><br> **PrimExpression'** → . ID PrimExpression' <br> \| . ID ( (ExpressionsList)? ) PrimExpression' <br> \| ε |
 
 
-3. Operadores (OP): &&, <, >, +, −, ∗, /, =, ==, ! = e ! <br>
-    Autômato correspondente: <br >
-    ![alt text](image.png)
 
-4. Separadores (SEP): (, ), [, ], {, }, ;, . e ,;<br>
-    Autômato correspondente: <br >
-    ![alt text](image-1.png)
+## :desktop_computer: Execução
+A compilação pode ser realizada da seguinte forma:
+```
+g++ -o parser scanner.cpp parser.cpp principal.cpp
 
-5. Palavras reservadas: boolean, class, else, extends, false, if, int, length,
-main, new, public, return, static, String, System.out.println, this, true,
-void e while;
-6. Comentários: os comentários devem ser ignorados. Existem dois tipos: comentário de linha
-(iniciado com // e indo até o final da linha) e comentário de bloco (iniciado com /∗ e encerrado
-em ∗/ sem aninhamentos);
-7. Espaços em branco: devem ser ignorados. São eles \n, \t, \r e \f.
+./parser teste.mj
+```
 
-# Remoção de recursão à esquerda da gramática
+O analisador será responsável por percorrer o arquivo teste e retornar quais os produções identificadas. Caso não seja encontrada correspondência com as produções da linguagem, uma mensagem de erro será retornada, indicando qual a linha em que erro ocorreu e sua descrição.
 
-| **Nome da produção**              | **Produção original**                                                                 | **Produção sem recursão à esquerda**                                                |
-|-----------------------|------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| **Expression**        | **Expression** → Expression && RelExpression <br> \| RelExpression                                            | **Expression** → RelExpression Expression' <br> **Expression'** → && RelExpression Expression' <br> \| **ε** |
-| **RelExpression**     | **RelExpression** → RelExpression < AddExpression <br> \| RelExpression > AddExpression <br> \| RelExpression == AddExpression <br> \| RelExpression != AddExpression <br> \| AddExpression | **RelExpression** → AddExpression RelExpression' <br> **RelExpression'** → < AddExpression RelExpression' <br> \| > AddExpression RelExpression' <br> \| == AddExpression RelExpression' <br> \| != AddExpression RelExpression' <br> \| ε |
-| **AddExpression**     | **AddExpression** → AddExpression + MultExpression <br> \| AddExpression - MultExpression <br> \| MultExpression | **AddExpression** → MultExpression AddExpression' <br> **AddExpression'** → + MultExpression AddExpression' <br> \| - MultExpression AddExpression' <br> \| ε |
-| **MultExpression**    | **MultExpression** → MultExpression * UnExpression <br> \| MultExpression / UnExpression <br> \| UnExpression  | **MultExpression** → UnExpression MultExpression' <br> **MultExpression'** → * UnExpression MultExpression' <br> \| / UnExpression MultExpression' <br> \| ε |
-| **PrimExpression**    | **PrimExpression** → ID <br> \| this <br> \| new ID ( ) <br> \| ( Expression ) <br> \| PrimExpression . ID <br> \| PrimExpression . ID ( (ExpressionsList)? ) <br> \| PrimExpression . length <br> \| PrimExpression [ Expression ] | **PrimExpression** → ID PrimExpression' <br> \| this PrimExpression' <br> \| new ID ( ) PrimExpression' <br> \| ( Expression ) PrimExpression' <br> **PrimExpression'** → . ID PrimExpression' <br> \| . ID ( (ExpressionsList)? ) PrimExpression' <br> \| ε |
+Os arquivos dentro da pasta *testes_parser* podem ser utilizados.
 
+##
+O código desenvolvido foi submetido no projeto prático da disciplina de Compiladores I/2024, na UFMS.
